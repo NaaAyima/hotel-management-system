@@ -36,7 +36,7 @@ const users = [
 (async () => {
   const passwords = {
     'admin': 'admin123',
-    'receptionist': 'reception123',
+    'receptionist': 'recep123',
     'manager': 'manager123'
   };
 
