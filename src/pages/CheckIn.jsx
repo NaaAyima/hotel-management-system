@@ -16,9 +16,8 @@ function CheckIn() {
     const fetchRooms = async () => {
       try {
         const data = await roomsAPI.getAll({ status: 'Available' })
-        // Transform API data to match component structure
         const rooms = data.rooms.map(room => ({
-          number: room.roomNumber,
+          number: room.roomNumber, // the api.js normalization ensures roomNumber exists
           type: room.type,
           price: room.pricePerNight,
           id: room.id

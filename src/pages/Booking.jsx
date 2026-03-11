@@ -18,7 +18,7 @@ function Booking() {
         const data = await roomsAPI.getAll({})
         // Transform API data to match component structure
         const rooms = data.rooms.map(room => ({
-          number: room.roomNumber,
+          number: room.roomNumber, // normalized by api.js
           type: room.type,
           price: room.pricePerNight,
           features: Array.isArray(room.features) ? room.features.join(', ') : room.features,
