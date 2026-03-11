@@ -133,6 +133,7 @@ function CheckIn() {
         guestName: formData.guestName,
         guestPhone: formData.phoneNumber,
         roomId: selectedRoomData.id,
+        roomNumber: selectedRoomData.number,
         checkInDate: formData.checkInDate,
         checkOutDate: formData.checkOutDate,
         numberOfNights: parseInt(formData.numberOfNights),

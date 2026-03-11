@@ -182,6 +182,7 @@ function Booking() {
     try {
       const bookingData = {
         roomId: selectedRoom.id,
+        roomNumber: selectedRoom.number,
         guestName: formData.guestName,
         guestPhone: formData.phoneNumber,
         guestEmail: formData.email,
