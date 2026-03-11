@@ -15,7 +15,7 @@ const authMiddleware = (req, res, next) => {
     const token = authHeader.split(' ')[1];
 
     // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'temporary_default_secret_for_hotel_management');
     
     // Add user info to request
     req.user = decoded;

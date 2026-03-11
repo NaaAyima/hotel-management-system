@@ -87,8 +87,8 @@ router.post('/login', async (req, res) => {
         name: user.name,
         email: user.email
       },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN }
+      process.env.JWT_SECRET || 'temporary_default_secret_for_hotel_management',
+      { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
     );
 
     // Return user data and token
