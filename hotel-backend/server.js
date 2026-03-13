@@ -75,6 +75,11 @@ const startServer = async () => {
 
 startServer();
 
+// Vercel serverless requires the app to be exported immediately
+// We initiate the database connection in the background so it's ready for requests
+connectDatabase().catch(console.error);
+
 // Vercel serverless export
 module.exports = app;
+
 
