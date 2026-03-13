@@ -59,18 +59,22 @@ app.use((req, res) => {
   });
 });
 
-// Start server
+// Start server (only locally, Vercel handles this in serverless functions)
 const startServer = async () => {
   await connectDatabase();
   
-  app.listen(PORT, () => {
-    console.log(`\n🚀 J.J.O.J Guest House Backend Server`);
-    console.log(`📍 Running on: http://localhost:${PORT}`);
-    console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
-    console.log(`✅ Server started at: ${new Date().toISOString()}\n`);
-  });
+  if (process.env.NODE_ENV !== 'production' || process.env.RENDER) {
+    app.listen(PORT, () => {
+      console.log(`\n🚀 J.J.O.J Guest House Backend Server`);
+      console.log(`📍 Running on: http://localhost:${PORT}`);
+      console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
+      console.log(`✅ Server started at: ${new Date().toISOString()}\n`);
+    });
+  }
 };
 
 startServer();
 
+// Vercel serverless export
 module.exports = app;
+
