@@ -1,4 +1,7 @@
 const { Sequelize } = require('sequelize');
+// Explicitly require pg to force Vercel's static analyzer to include it in the Serverless deployment bundle
+require('pg');
+require('pg-hstore');
 
 // Support direct DATABASE_URL connection string (preferred for Vercel Serverless)
 const sequelize = process.env.DATABASE_URL 
