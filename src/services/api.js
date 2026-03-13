@@ -1,5 +1,5 @@
 // API Service for J.J.O.J Guest House
-const API_BASE_URL = 'https://jjoj-guest-house.onrender.com/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://jjoj-guest-house.onrender.com/api';
 
 // Get JWT token from localStorage
 const getToken = () => {
