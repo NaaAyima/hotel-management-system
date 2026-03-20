@@ -2,50 +2,58 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { authMiddleware } = require('../middleware/auth');
+const User = require('../models/User');
 const router = express.Router();
 
-// In-memory user database (can be replaced with MongoDB/PostgreSQL later)
-const users = [
-  {
-    id: 1,
-    username: 'admin',
-    password: '$2a$10$YourHashedPasswordHere', // Will be hashed on first run
-    role: 'Admin',
-    name: 'Administrator',
-    email: 'admin@jjoj.com'
-  },
-  {
-    id: 2,
-    username: 'receptionist',
-    password: '$2a$10$YourHashedPasswordHere',
-    role: 'Receptionist',
-    name: 'Sarah Mensah',
-    email: 'receptionist@jjoj.com'
-  },
-  {
-    id: 3,
-    username: 'manager',
-    password: '$2a$10$YourHashedPasswordHere',
-    role: 'Manager',
-    name: 'John Osei',
-    email: 'manager@jjoj.com'
-  }
-];
+// POST /api/auth/signup - Register a new user
+router.post('/signup', async (req, res) => {
+  try {
+    const { username, password, email, name, role } = req.body;
 
-// Initialize passwords (hash them on first run)
-(async () => {
-  const passwords = {
-    'admin': 'admin123',
-    'receptionist': 'recep123',
-    'manager': 'manager123'
-  };
-
-  for (let user of users) {
-    if (user.password === '$2a$10$YourHashedPasswordHere') {
-      user.password = await bcrypt.hash(passwords[user.username], 10);
+    if (!username || !password || !email || !name) {
+      return res.status(400).json({ success: false, message: 'Please provide all required fields' });
     }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ where: { username } });
+    if (existingUser) {
+      return res.status(400).json({ success: false, message: 'Username is already taken' });
+    }
+
+    const existingEmail = await User.findOne({ where: { email } });
+    if (existingEmail) {
+      return res.status(400).json({ success: false, message: 'Email is already registered' });
+    }
+
+    // Hash the password securely
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create the persistent user
+    const newUser = await User.create({
+      username,
+      password: hashedPassword,
+      email,
+      name,
+      role: role || 'Receptionist'
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'User registered successfully',
+      data: {
+        id: newUser.id,
+        username: newUser.username,
+        role: newUser.role,
+        name: newUser.name,
+        email: newUser.email
+      }
+    });
+
+  } catch (error) {
+    console.error('Signup error:', error);
+    res.status(500).json({ success: false, message: 'Registration failed. Please try again.' });
   }
-})();
+});
 
 // POST /api/auth/login - Login user
 router.post('/login', async (req, res) => {
@@ -60,8 +68,8 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    // Find user
-    const user = users.find(u => u.username === username);
+    // Find persistent user in database
+    const user = await User.findOne({ where: { username } });
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -69,7 +77,7 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    // Check password
+    // Check password securely
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({
@@ -135,27 +143,32 @@ router.get('/verify', authMiddleware, (req, res) => {
   });
 });
 
-// GET /api/auth/me - Get current user details
-router.get('/me', authMiddleware, (req, res) => {
-  const user = users.find(u => u.id === req.user.id);
-  
-  if (!user) {
-    return res.status(404).json({
-      success: false,
-      message: 'User not found'
-    });
-  }
-
-  res.json({
-    success: true,
-    data: {
-      id: user.id,
-      username: user.username,
-      role: user.role,
-      name: user.name,
-      email: user.email
+// GET /api/auth/me - Get current user details from Database
+router.get('/me', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.id);
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found in system'
+      });
     }
-  });
+
+    res.json({
+      success: true,
+      data: {
+        id: user.id,
+        username: user.username,
+        role: user.role,
+        name: user.name,
+        email: user.email
+      }
+    });
+  } catch (error) {
+    console.error('Fetch user error:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch user context' });
+  }
 });
 
 module.exports = router;

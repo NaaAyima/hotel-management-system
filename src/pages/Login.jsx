@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
 import { authAPI } from "../services/api"
 import "../index.css"
 
@@ -143,6 +143,9 @@ function Login() {
 
         {/* Footer */}
         <div style={styles.footer}>
+          <p style={{ fontSize: "0.95rem", color: "#4b5563" }}>
+            Don't have an account? <Link to="/signup" style={{ color: "#2563eb", textDecoration: "none", fontWeight: "600" }}>Sign up here</Link>
+          </p>
           <p style={styles.footerText}>
             © 2026 J.J.O.J Guest House. All rights reserved.
           </p>
