@@ -6,12 +6,7 @@ import "../index.css"
 function Login() {
   const navigate = useNavigate()
   
-  // Demo user credentials (for display only)
-  const users = [
-    { username: "admin", password: "admin123", role: "Admin", name: "Administrator" },
-    { username: "receptionist", password: "recep123", role: "Receptionist", name: "Sarah Mensah" },
-    { username: "manager", password: "manager123", role: "Manager", name: "John Osei" },
-  ]
+
 
   const [formData, setFormData] = useState({
     username: "",
@@ -20,7 +15,6 @@ function Login() {
   })
 
   const [error, setError] = useState("")
-  const [showCredentials, setShowCredentials] = useState(true)
   const [loading, setLoading] = useState(false)
 
   // Handle input changes
@@ -81,40 +75,7 @@ function Login() {
     }
   }
 
-  // Quick login with demo credentials
-  const quickLogin = async (user) => {
-    setFormData({
-      username: user.username,
-      password: user.password,
-      rememberMe: false
-    })
-    
-    setLoading(true)
-    setError("")
-    
-    try {
-      // Call backend API for authentication
-      const response = await authAPI.login(user.username, user.password)
-      
-      // Store user info with JWT token in localStorage
-      const userSession = {
-        username: response.user.username,
-        role: response.user.role,
-        name: response.user.name,
-        token: response.token,
-        loginTime: new Date().toISOString()
-      }
-      
-      localStorage.setItem("hotelUser", JSON.stringify(userSession))
-      alert(`Welcome, ${response.user.name}!\n\nRole: ${response.user.role}\nLogin successful.`)
-      navigate("/dashboard")
-    } catch (err) {
-      setError(err.message || "Login failed. Please try again.")
-      console.error("Quick login error:", err)
-    } finally {
-      setLoading(false)
-    }
-  }
+
 
   return (
     <div style={styles.container}>
@@ -178,54 +139,7 @@ function Login() {
           </button>
         </form>
 
-        {/* Divider */}
-        <div style={styles.divider}>
-          <span style={styles.dividerText}>OR</span>
-        </div>
 
-        {/* Demo Credentials Section */}
-        <div style={styles.demoSection}>
-          <div style={styles.demoHeader}>
-            <h3 style={styles.demoTitle}>Quick Login Demo</h3>
-            <button
-              type="button"
-              onClick={() => setShowCredentials(!showCredentials)}
-              style={styles.toggleButton}
-            >
-              {showCredentials ? "Hide" : "Show"}
-            </button>
-          </div>
-
-          {showCredentials && (
-            <div style={styles.demoCredentials}>
-              <p style={styles.demoInfo}>Click any role below to login instantly:</p>
-              
-              {users.map((user, index) => (
-                <div key={index} style={styles.credentialCard}>
-                  <div style={styles.credentialInfo}>
-                    <span style={styles.credentialRole}>{user.role}</span>
-                    <div style={styles.credentialDetails}>
-                      <span style={styles.credentialLabel}>Username:</span>
-                      <span style={styles.credentialValue}>{user.username}</span>
-                    </div>
-                    <div style={styles.credentialDetails}>
-                      <span style={styles.credentialLabel}>Password:</span>
-                      <span style={styles.credentialValue}>{user.password}</span>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => quickLogin(user)}
-                    style={styles.quickLoginButton}
-                    disabled={loading}
-                  >
-                    {loading ? "Logging in..." : `Login as ${user.role}`}
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
 
         {/* Footer */}
         <div style={styles.footer}>
